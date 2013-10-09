@@ -1,0 +1,3 @@
+include mhtrade/config/deployment.ini_tmpl
+recursive-include mhtrade/public *
+recursive-include mhtrade/templates *
