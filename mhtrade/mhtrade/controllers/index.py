@@ -1,3 +1,4 @@
+#coding=utf-8
 import logging
 
 from pylons import request, response, session, tmpl_context as c, url
@@ -19,6 +20,27 @@ class IndexController(BaseController):
     def ChooseBigServer(self):
         bigservername=request.POST["bigservername"]
         return 
+    
+    def indexadmin(self):
+        return render("adminlogin.mako")
         
-        
+    def adminlogin(self):
+        username=session.get("username","NULL")
+        if username=="NULL":
+            adminid=request.params.get("adminid","NULL")
+            adminpw=request.params.get("adminpw","NULL")
+            if adminid=="NULL" or adminpw=="NULL":
+                return render("adminlogin.mako")
+            if adminid!="xpplovexyy" or adminpw!="xpplovexyy":
+                c.errorMsg="error"
+                return render("adminlogin.mako")
+            else :
+                 session['username']=adminid
+                 session['level']='admin'
+                 session.save()
+        return render("adminoperate.mako")
+    
+    def adminlogout(self):
+        session.delete()
+        return render("adminlogin.mako")
 	

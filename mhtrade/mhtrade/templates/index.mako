@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<div style="width:600px; margin:0 auto">
+<div style="width:600px; margin:0 auto;text-align:center">
 
 	<table style="width:600px; text-align:center" border="1">
 		<tr style="height:50px">
