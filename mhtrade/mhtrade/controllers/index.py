@@ -5,13 +5,20 @@ from pylons.controllers.util import abort, redirect
 
 from mhtrade.lib.base import BaseController, render
 
+import MySQLdb
+
 log = logging.getLogger(__name__)
 
 class IndexController(BaseController):
 
-    def index(self):
+    def index1(self):
         # Return a rendered template
         #return render('/index.mako')
         # or, return a string
         return render('/index.mako')
+    def ChooseBigServer(self):
+        bigservername=request.POST["bigservername"]
+        return 
+        
+        
 	

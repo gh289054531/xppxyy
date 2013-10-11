@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Delete resource &apos;mhtrade/mhtrade/templates/index.mako&apos;" deleteContents="false" description="Delete resource &apos;mhtrade/mhtrade/templates/index.mako&apos;" element1="/mhtrade/mhtrade/templates/index.mako" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1381402620695"/>&#x0A;<refactoring comment="Delete resource &apos;mhtrade/mhtrade/templates/index.mako~&apos;" deleteContents="false" description="Delete resource &apos;mhtrade/mhtrade/templates/index.mako~&apos;" element1="/mhtrade/mhtrade/templates/index.mako~" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1381402622632"/>
+</session>
