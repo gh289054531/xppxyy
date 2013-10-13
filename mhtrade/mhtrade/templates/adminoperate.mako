@@ -5,11 +5,21 @@
 <title>Insert title here</title>
 </head>
 <body>
-管理员登录成功!
+管理员登录成功!${session['username']}
 <br>
 <a href="/index/adminlogout">[退出]</a>
 <br>
-${session['username']}
+<div>
+	<form action="/adminop/addserver" method="post">
+		大区名：<input type="text" name="bigservername" />
+		区名：<input type="text" name="servername" />
+		<input type="submit" value="添加区信息" />
+	</form>
+	%if hasattr(c,"errorMsg"):
+		${c.errorMsg}
+	%endif
+</div>
 
+<a>
 </body>
 </html>

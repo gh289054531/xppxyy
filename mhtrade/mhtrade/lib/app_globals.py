@@ -16,3 +16,9 @@ class Globals(object):
 
         """
         self.cache = CacheManager(**parse_cache_config_options(config))
+        self.dbhost="localhost"
+        self.dbport=3306
+        self.dbuser="pstar"
+        self.dbpasswd="zp910131"
+        self.dbdb="mhtrade"
+        
