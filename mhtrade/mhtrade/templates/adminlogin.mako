@@ -12,7 +12,7 @@
 	</p>
 <form action="/index/adminlogin" method="post">
 	管理员帐号：<input type="text" name="adminid" />
-	密码：<input type="text" name="adminpw" />
+	密码：<input type="password" name="adminpw" />
 	<input type="submit" value="登录" />
 </form>
 </body>

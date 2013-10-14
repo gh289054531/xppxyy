@@ -4,6 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>梦幻交易系统</title>
 <script src="../index.js">
+<link href="../index.css" rel="stylesheet" type="text/css" />
 </script>
 
 </head>
@@ -106,29 +107,38 @@
 	</table>
 	<br/>
 
-	<table  style="width:600px; text-align:center" border="1">
-		<tr style="height:50px">
-			<td></td>
-			<td></td>
- 			<td></td>
- 			<td></td>
- 			<td></td>
- 			<td></td>
- 			<td></td>
-		</tr>
-		<tr style="height:50px">
-			<td></td>
-			<td></td>
- 			<td></td>
- 			<td></td>
- 			<td></td>
- 			<td></td>
- 			<td></td>
-		</tr>
+	<table  style="width:560px; text-align:center" border="1">
+		<%
+			count=0
+		%>
+		%if hasattr(c,'servernames'):
+			%for servername in c.servernames:
+				%if count==0:
+					<tr style="height:50px;">
+				%endif
+				<td onclick="ChooseServer(this)">${servername}</td>
+				%if count==6 or count==len(c.servernames)-1:
+					</tr>
+				%endif
+				%if count==6:
+					<%
+						count=0
+					%>
+				%else:
+					<%
+						count=count+1;
+					%>
+				%endif
+			%endfor
+		%endif
 	</table>
 	
 	<form action="/index/choosebigserver" method="post" id="form1">
 		<input id="bigservername" type="hidden" name="bigservername" />
+	</form>
+	
+	<form action="/index/chooseserver" method="post" id="form2">
+		<input id="servername" type="hidden" name="servername" />
 	</form>
 </div>
 

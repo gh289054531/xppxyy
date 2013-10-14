@@ -4,7 +4,7 @@ UNDEFINED = runtime.UNDEFINED
 __M_dict_builtin = dict
 __M_locals_builtin = locals
 _magic_number = 6
-_modified_time = 1381503972.461332
+_modified_time = 1381756434.108345
 _template_filename='/home/pstar/xppxyy/mhtrade/mhtrade/templates/adminlogin.mako'
 _template_uri='adminlogin.mako'
 _template_cache=cache.Cache(__name__, _modified_time)
@@ -30,7 +30,7 @@ def render_body(context,**pageargs):
             __M_writer(u'\n')
             pass
         # SOURCE LINE 12
-        __M_writer(u'\t</p>\n<form action="/index/adminlogin" method="post">\n\t\u7ba1\u7406\u5458\u5e10\u53f7\uff1a<input type="text" name="adminid" />\n\t\u5bc6\u7801\uff1a<input type="text" name="adminpw" />\n\t<input type="submit" value="\u767b\u5f55" />\n</form>\n</body>\n</html>')
+        __M_writer(u'\t</p>\n<form action="/index/adminlogin" method="post">\n\t\u7ba1\u7406\u5458\u5e10\u53f7\uff1a<input type="text" name="adminid" />\n\t\u5bc6\u7801\uff1a<input type="password" name="adminpw" />\n\t<input type="submit" value="\u767b\u5f55" />\n</form>\n</body>\n</html>')
         return ''
     finally:
         context.caller_stack._pop_frame()

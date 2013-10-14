@@ -13,16 +13,35 @@ log = logging.getLogger(__name__)
 
 class IndexController(BaseController):
 
-    def index1(self):
+    def index(self):
         # Return a rendered template
         #return render('/index.mako')
         # or, return a string
         return render('/index.mako')
-    def ChooseBigServer(self):
+    def choosebigserver(self):
         bigservername=request.params["bigservername"]
-        #request.POST["AA"]
-       # request.GET["BB"]
-        return 
+        con=None
+        try:
+            con=MySQLdb.connect(host=g.dbhost,user=g.dbuser,passwd=g.dbpasswd,db=g.dbdb,port=g.dbport,charset="utf8")
+            cur=con.cursor();
+            cur.execute("select server_name from servers where big_server_name=%s",(bigservername))
+            con.commit()
+            rows=cur.fetchall()
+            c.servernames=[]
+            for row in rows:
+                c.servernames.append(row[0])
+        except MySQLdb.Error,e:
+            print "Mysql error %d:%s"%(e.args[0],e.args[1])
+            c.errorMsg="数据库读区信息出错"
+        finally:
+            if con!=None:
+                con.close()
+        return render("index.mako")
+    
+    def chooseserver(self):
+        servername=request.params["servername"]
+        c.servername=servername
+        return render("userlogin.mako")
     
     #管理员登录时输入url：/index/indexadmin
     def indexadmin(self):
