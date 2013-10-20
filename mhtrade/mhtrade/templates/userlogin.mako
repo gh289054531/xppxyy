@@ -17,10 +17,10 @@
 	<input type="submit" value="登录服务器" />
     <input type="hidden" value=${c.servername} name="servername"/>
 </form>
-	<p>
+<p>
 	% if hasattr(c,"errorMsg") :
 		${c.errorMsg}
 	% endif
-	</p>
+</p>
 </body>
 </html>
