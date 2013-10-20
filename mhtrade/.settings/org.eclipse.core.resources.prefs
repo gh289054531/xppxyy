@@ -1,3 +1,4 @@
 eclipse.preferences.version=1
 encoding//mhtrade/controllers/adminop.py=utf-8
 encoding//mhtrade/controllers/index.py=utf-8
+encoding//mhtrade/controllers/userRegister.py=utf-8
