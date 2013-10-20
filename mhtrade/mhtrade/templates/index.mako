@@ -53,7 +53,7 @@
 			<td></td>
 			<td></td>
  			<td></td>
- 			<td >广东1区</td>
+ 			<td onclick="ChooseBigServer(this)">广东1区</td>
  			<td></td>
  			<td></td>
  			<td></td>

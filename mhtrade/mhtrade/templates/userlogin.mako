@@ -15,6 +15,12 @@
 	用户名：<input type="text" name="username"/>
 	密码：<input type="password" name="password"/>
 	<input type="submit" value="登录服务器" />
+    <input type="hidden" value=${c.servername} name="servername"/>
 </form>
+	<p>
+	% if hasattr(c,"errorMsg") :
+		${c.errorMsg}
+	% endif
+	</p>
 </body>
 </html>
