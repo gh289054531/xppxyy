@@ -11,10 +11,10 @@ smtp_server = localhost
 error_email_from = paste@localhost
 
 [server:main]
-use = egg:Paste#http
-#use = egg:PasteScript#flup_fcgi_thread
-host = 127.0.0.1
-#host = 0.0.0.0
+use = egg:PasteScript#flup_fcgi_thread
+#use = egg:Flup#fcgi_thread
+# host = 127.0.0.1
+host = 0.0.0.0
 port = 5000
 
 [app:main]
@@ -43,7 +43,7 @@ beaker.session.secret = somesecret
 keys = root, routes, mhtrade
 
 [handlers]
-keys = console,accesslog
+keys = console
 
 [formatters]
 keys = generic
@@ -60,19 +60,13 @@ qualname = routes.middleware
 
 [logger_mhtrade]
 level = DEBUG
-handlers = accesslog
+handlers =
 qualname = mhtrade
 
 [handler_console]
 class = StreamHandler
 args = (sys.stderr,)
 level = NOTSET
-formatter = generic
-
-[handler_accesslog]
-class = FileHandler
-args = ('access.log','a')
-level = INFO
 formatter = generic
 
 [formatter_generic]

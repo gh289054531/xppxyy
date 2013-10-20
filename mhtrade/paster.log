@@ -1,0 +1,43 @@
+Traceback (most recent call last):
+  File "/usr/bin/paster", line 4, in <module>
+    command.run()
+  File "/usr/lib/python2.7/dist-packages/paste/script/command.py", line 104, in run
+    invoke(command, command_name, options, args[1:])
+  File "/usr/lib/python2.7/dist-packages/paste/script/command.py", line 143, in invoke
+    exit_code = runner.run(args)
+  File "/usr/lib/python2.7/dist-packages/paste/script/command.py", line 238, in run
+    result = self.command()
+  File "/usr/lib/python2.7/dist-packages/paste/script/serve.py", line 282, in command
+    relative_to=base, global_conf=vars)
+  File "/usr/lib/python2.7/dist-packages/paste/script/serve.py", line 316, in loadserver
+    relative_to=relative_to, **kw)
+  File "/usr/lib/python2.7/dist-packages/paste/deploy/loadwsgi.py", line 255, in loadserver
+    return loadobj(SERVER, uri, name=name, **kw)
+  File "/usr/lib/python2.7/dist-packages/paste/deploy/loadwsgi.py", line 271, in loadobj
+    global_conf=global_conf)
+  File "/usr/lib/python2.7/dist-packages/paste/deploy/loadwsgi.py", line 296, in loadcontext
+    global_conf=global_conf)
+  File "/usr/lib/python2.7/dist-packages/paste/deploy/loadwsgi.py", line 320, in _loadconfig
+    return loader.get_context(object_type, name, global_conf)
+  File "/usr/lib/python2.7/dist-packages/paste/deploy/loadwsgi.py", line 454, in get_context
+    section)
+  File "/usr/lib/python2.7/dist-packages/paste/deploy/loadwsgi.py", line 476, in _context_from_use
+    object_type, name=use, global_conf=global_conf)
+  File "/usr/lib/python2.7/dist-packages/paste/deploy/loadwsgi.py", line 406, in get_context
+    global_conf=global_conf)
+  File "/usr/lib/python2.7/dist-packages/paste/deploy/loadwsgi.py", line 296, in loadcontext
+    global_conf=global_conf)
+  File "/usr/lib/python2.7/dist-packages/paste/deploy/loadwsgi.py", line 328, in _loadegg
+    return loader.get_context(object_type, name, global_conf)
+  File "/usr/lib/python2.7/dist-packages/paste/deploy/loadwsgi.py", line 620, in get_context
+    object_type, name=name)
+  File "/usr/lib/python2.7/dist-packages/paste/deploy/loadwsgi.py", line 646, in find_egg_entry_point
+    possible.append((entry.load(), protocol, entry.name))
+  File "/usr/local/lib/python2.7/dist-packages/distribute-0.6.28-py2.7.egg/pkg_resources.py", line 2016, in load
+    if require: self.require(env, installer)
+  File "/usr/local/lib/python2.7/dist-packages/distribute-0.6.28-py2.7.egg/pkg_resources.py", line 2029, in require
+    working_set.resolve(self.dist.requires(self.extras),env,installer))
+  File "/usr/local/lib/python2.7/dist-packages/distribute-0.6.28-py2.7.egg/pkg_resources.py", line 588, in resolve
+    raise DistributionNotFound(req)
+pkg_resources.DistributionNotFound: Flup
+Removing PID file paster.pid

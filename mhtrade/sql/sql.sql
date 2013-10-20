@@ -1,5 +1,7 @@
 drop database if exists mhtrade;
 
+create database mhtrade;
+
 CREATE TABLE `mhtrade`.`users` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `username` VARCHAR(50) NOT NULL,
