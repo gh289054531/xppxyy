@@ -66,9 +66,48 @@ class IndexController(BaseController):
                  session['username']=adminid
                  session['level']='admin'
                  session.save()
-        return render("adminoperate.mako")
+        if session.get("level", "NULL") == 'admin':
+	    return render("adminoperate.mako")
+	else:
+	    return "权限不足"
     
     def adminlogout(self):
         session.delete()
         return render("adminlogin.mako")
 	
+    def userlogin(self):
+	c.servername = request.params.get("servername", "NULL")
+	print c.servername
+	username = request.params.get("username", "NULL")
+        password = request.params.get("password", "NULL")
+        if c.servername == "NULL":
+            session.delete()
+	    return render("index.mako")
+	try:
+            con = MySQLdb.connect(host = g.dbhost, user = g.dbuser, passwd = g.dbpasswd, db = g.dbdb, port = g.dbport, charset = "utf8")
+            cur = con.cursor()
+            cur.execute("select password from users where username = %s", username)
+            con.commit()
+	    try_password = cur.fetchall()
+	    print "jfkd" + str(try_password)
+	except MySQLdb.Error as e:
+            print "mysql error %d: %s" %(e.args[0], e.args[1])
+            c.errorMsg = "用户名或密码错误"
+        finally:
+            if con != None:
+                con.close()
+	if str(try_password) == "()":
+	    c.errorMsg = "error"
+	    return render("userlogin.mako")
+        if password == try_password[0][0]:
+            session['username'] = username
+	    session['level'] = 'user'
+	    session.save()  
+            return render("usersell.mako")
+        else:
+            c.errorMsg = "error"
+	    return render("userlogin.mako")
+
+    def userlogout(self):
+	session.delete()
+	return render("index.mako")
