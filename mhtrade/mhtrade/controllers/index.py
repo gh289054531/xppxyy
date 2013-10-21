@@ -103,7 +103,8 @@ class IndexController(BaseController):
 		if password == try_password[0][0]:
 			session['username'] = username
 			session['level'] = 'user'
-			session.save()  
+			session.save()
+			c.username = username  
 			return render("usersell.mako")
 		else:
 			c.errorMsg = "error"

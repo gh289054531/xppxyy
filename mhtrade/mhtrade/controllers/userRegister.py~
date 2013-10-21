@@ -97,7 +97,11 @@ class UserregisterController(BaseController):
             if con != None:
                 con.close()
         return
+    
+<<<<<<< HEAD
 
+
+=======
     def changepasswd(self):
         username = session['username']
         c.username = username
@@ -124,6 +128,7 @@ class UserregisterController(BaseController):
 			if con != None:
 				con.close()
         return render("usersell.mako")
+>>>>>>> be916c38d5fb2e02f2fbe88944f799993d5ccb02
 
 def sendmail(server, fro, to, subject, text):
     assert type(server) == dict 
