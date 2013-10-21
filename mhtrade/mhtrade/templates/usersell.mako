@@ -7,9 +7,12 @@
 <body>
 
 <br/>
+<p>${c.username} 你好</p>
 <p>登录成功</p>
 
-<a href="/index/userlogout">[退出]</a>
+<p><a href="/userRegister/changepasswd">[修改密码]</a></p>
+
+<p><a href="/index/userlogout">[退出]</a></p>
 </form>
 </body>
 </html>
