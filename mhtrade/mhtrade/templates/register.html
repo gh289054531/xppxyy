@@ -5,6 +5,7 @@
 <title>Insert title here</title>
 </head>
 <body>
+	
 	<table style="width: 600px; margin: 0 auto; text-align: center;">
 		<form action="/userRegister/doregister" method="post">
 			<tr>
@@ -36,5 +37,10 @@
 			</tr>
 		</form>
 	</table>
+	<p>
+	% if hasattr(c,"errorMsg") :
+		${c.errorMsg}
+	% endif
+</p>
 </body>
 </html>
