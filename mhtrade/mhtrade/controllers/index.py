@@ -8,6 +8,7 @@ from pylons.controllers.util import abort, redirect
 from mhtrade.lib.base import BaseController, render
 
 import MySQLdb
+import base64
 
 log = logging.getLogger(__name__)
 
@@ -40,8 +41,16 @@ class IndexController(BaseController):
 		return render("index.mako")
 
 	def chooseserver(self):
-		servername=request.params["servername"]
+		servername=request.params.get("servername","NULL")
+		if servername=="NULL":
+			return render("index.mako")
+		username=session.get("username","NULL")
+		session['server']=servername
 		c.servername=servername
+		session.save()
+		if username!="NULL":
+			c.username=username
+			return render("usersell.mako")
 		return render("userlogin.mako")
 
 	#管理员登录时输入url：/index/indexadmin
@@ -77,37 +86,41 @@ class IndexController(BaseController):
 		return render("adminlogin.mako")
 
 	def userlogin(self):
-		c.servername = request.params.get("servername", "NULL")
-		print c.servername
+		servername=session.get('server',"NULL")
+		print servername
+		if servername == "NULL":
+			return render("index.mako")
+		c.servername=servername
+		
+		username=session.get('username',"NULL")
+		print username
+		if username!= "NULL":
+			c.username=username
+			return render("usersell.mako")
+		
 		username = request.params.get("username", "NULL")
 		password = request.params.get("password", "NULL")
-		if c.servername == "NULL":
-			session.delete()
-			return render("index.mako")
+		encrypassword=base64.encodestring(password)
 		try:
 			con = MySQLdb.connect(host = g.dbhost, user = g.dbuser, passwd = g.dbpasswd, db = g.dbdb, port = g.dbport, charset = "utf8")
 			cur = con.cursor()
 			cur.execute("select password from users where username = %s", username)
 			con.commit()
-			try_password = cur.fetchall()
-			print "jfkd" + str(try_password)
+			row = cur.fetchone()
+			try_password=str(row[0])
 		except MySQLdb.Error as e:
 			print "mysql error %d: %s" %(e.args[0], e.args[1])
-			c.errorMsg = "用户名或密码错误"
+			c.errorMsg = "登录校验密码错误"
 		finally:
 			if con != None:
 				con.close()
-		if str(try_password) == "()":
-			c.errorMsg = "error"
-			return render("userlogin.mako")
-		if password == try_password[0][0]:
+		if encrypassword == try_password:
 			session['username'] = username
 			session['level'] = 'user'
 			session.save()
-			c.username = username  
 			return render("usersell.mako")
 		else:
-			c.errorMsg = "error"
+			c.errorMsg = "密码错误"
 		return render("userlogin.mako")
 
 	def userlogout(self):

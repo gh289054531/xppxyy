@@ -7,8 +7,17 @@
 <body>
 
 <br/>
-<p>${c.username} 你好</p>
-<p>登录成功</p>
+<p>
+% if hasattr(c,"username"):
+	${c.username}
+% endif
+你好!
+ </p>
+<p>登录成功服务器:
+% if hasattr(c,"servername"):
+	${c.servername}
+% endif
+</p>
 
 <p><a href="/userRegister/changepasswd">[修改密码]</a></p>
 

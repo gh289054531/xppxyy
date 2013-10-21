@@ -99,31 +99,42 @@ class UserregisterController(BaseController):
         return
 
     def changepasswd(self):
-        username = session['username']
+        username=session.get("username","NULL")
+        if username=="NULL":
+            return render("userlogin.mako")
         c.username = username
         return render("changepasswd.mako")
 	
     def haschanged(self):
-        username = session['username']
+        username=session.get("username","NULL")
+        if username=="NULL":
+            return render("userlogin.mako")
         c.username = username
         newpasswd=request.params.get('newpasswd')
         newpasswdrepeat=request.params.get('newpasswdrepeat')
         print newpasswd
+        if len(newpasswd)<6 or len(newpasswd)>64:
+            c.errorMsg="密码长度必须在6-64之间"
+            return render("changepasswd.mako")
         if newpasswd != newpasswdrepeat:
             c.errorMsg = "两次输入密码不相同，请重新输入"
             return render("changepasswd.mako")
+        
+        encrynewpasswd=base64.encodestring(newpasswd)
         try:        
             con = MySQLdb.connect(host = g.dbhost, user = g.dbuser, passwd = g.dbpasswd, db = g.dbdb, port = g.dbport, charset = "utf8")
             cur = con.cursor()
-            cur.execute("update users set password=%s where username =%s", (newpasswd,username))
+            cur.execute("update users set password=%s where username =%s", (encrynewpasswd,username))
             con.commit()
         except MySQLdb.Error as e:
             print "mysql error %d: %s" %(e.args[0], e.args[1])
-            c.errorMsg = "an error accour"
+            c.errorMsg = "往数据库插入新密码错误"
         finally:
 			if con != None:
 				con.close()
         return render("usersell.mako")
+    
+       
 
 def sendmail(server, fro, to, subject, text):
     assert type(server) == dict 
@@ -139,4 +150,4 @@ def sendmail(server, fro, to, subject, text):
     smtp.login(server['user'], server['passwd']) 
     smtp.sendmail(fro, to, msg.as_string()) 
     smtp.close()
-    
+
