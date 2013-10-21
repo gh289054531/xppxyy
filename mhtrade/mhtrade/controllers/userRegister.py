@@ -57,7 +57,7 @@ class UserregisterController(BaseController):
         newpasswdrepeat=request.params.get('newpasswdrepeat')
         print newpasswd
         if newpasswd != newpasswdrepeat:
-            c.errorMsg = "there is difference between this two new password, repeat again"
+            c.errorMsg = "两次输入密码不相同，请重新输入"
             return render("changepasswd.mako")
         try:        
             con = MySQLdb.connect(host = g.dbhost, user = g.dbuser, passwd = g.dbpasswd, db = g.dbdb, port = g.dbport, charset = "utf8")

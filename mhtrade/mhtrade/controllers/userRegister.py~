@@ -55,7 +55,7 @@ class UserregisterController(BaseController):
         c.username = username
         newpasswd=request.params.get('newpasswd')
         newpasswdrepeat=request.params.get('newpasswdrepeat')
-		print newpasswd
+        print newpasswd
         if newpasswd != newpasswdrepeat:
             c.errorMsg = "there is difference between this two new password, repeat again"
             return render("changepasswd.mako")
