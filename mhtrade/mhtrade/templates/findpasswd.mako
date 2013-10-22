@@ -6,7 +6,6 @@
 </head>
 <body>
 
-<br/>
 <%include file="headbar.mako"/>
 
 <form action="/userRegister/findpasswd_sendmail" method="post">
