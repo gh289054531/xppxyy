@@ -134,6 +134,63 @@ class UserregisterController(BaseController):
 				con.close()
         return render("usersell.mako")
     
+    def findpasswd(self):
+        return render("findpasswd.mako")
+    
+    def findpasswd_sendmail(self):
+        username = request.params.get('username')
+        try:
+            con = MySQLdb.connect(host = g.dbhost, user = g.dbuser, passwd = g.dbpasswd, db = g.dbdb, port = g.dbport, charset = "utf8")
+            cur = con.cursor()
+            cur.execute("select email from users where username = %s", username)
+            con.commit()
+            row = cur.fetchone()
+            email = str(row[0])
+        except MySQLdb.Error as e:
+            print "mysql error %d: %s" %(e.args[0], e.args[1])
+            e.errorMsg = "用户名不存在"
+        finally:
+            if con != None:
+                con.close()
+        code = random.randint(100, 1000000)
+        encrycode = base64.encodestring(str(code))
+        url = 'http://localhost:5000/userRegister/find_change_passwd?' + urllib.urlencode({'username':username, 'code':encrycode})
+        sendmail({'name':"smtp.qq.com", 'user':'289054531', 'passwd':'pstar910131'}, '289054531@qq.com', [email], '梦幻交易系统用户注册验证', '请点击链接完成注册: ' + url)
+        return render("hassendemail.mako")
+        
+    def find_change_passwd(self):
+        username = request.params.get('username')
+        if username=="NULL":
+            return render("userlogin.mako")
+        c.username = username
+        return render("result_find_passwd.mako")
+
+    def if_findpasswd(self):
+        username = request.params.get('username')
+        print username
+        newpasswd=request.params.get('newpasswd')
+        newpasswdrepeat=request.params.get('newpasswdrepeat')
+        print newpasswd
+        if len(newpasswd)<6 or len(newpasswd)>64:
+            c.errorMsg="密码长度必须在6-64之间"
+            return render("changepasswd.mako")
+        if newpasswd != newpasswdrepeat:
+            c.errorMsg = "两次输入密码不相同，请重新输入"
+            return render("result_find_passwd.mako")
+        
+        encrynewpasswd=base64.encodestring(newpasswd)
+        try:        
+            con = MySQLdb.connect(host = g.dbhost, user = g.dbuser, passwd = g.dbpasswd, db = g.dbdb, port = g.dbport, charset = "utf8")
+            cur = con.cursor()
+            cur.execute("update users set password=%s where username =%s", (encrynewpasswd,username))
+            con.commit()
+        except MySQLdb.Error as e:
+            print "mysql error %d: %s" %(e.args[0], e.args[1])
+            c.errorMsg = "往数据库插入新密码错误"
+        finally:
+			if con != None:
+				con.close()
+        return render("index.mako")
        
 
 def sendmail(server, fro, to, subject, text):
