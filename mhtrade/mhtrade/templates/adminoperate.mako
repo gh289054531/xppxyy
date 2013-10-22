@@ -5,6 +5,7 @@
 <title>Insert title here</title>
 </head>
 <body>
+<%include file="headbar.html"/>
 管理员登录成功!${session['username']}
 <br>
 <a href="/index/adminlogout">[退出]</a>

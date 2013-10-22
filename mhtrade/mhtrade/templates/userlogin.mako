@@ -5,16 +5,13 @@
 <title>Insert title here</title>
 </head>
 <body>
-<p>您选择了服务器：
-% if hasattr(c,"servername"):
-	${c.servername}
-% endif
-</p>
+<%include file="headbar.mako"/>
 <p>如果您是买家，请直接进入商品界面无需登录;如果您是卖家，需要登录后才能出售物品。</p>
 <a href="">买家请点击</a>
-<br>
+<br/>
+<hr/>
+<br/>
 <p>卖家请输入登录信息:</p>
-<p>如果您没有帐号，请点击<a href="/userRegister/register">[注册]</a></p>
 <form action="/index/userlogin" method="post">
 	用户名：<input type="text" name="username"/>
 	密码：<input type="password" name="password"/>

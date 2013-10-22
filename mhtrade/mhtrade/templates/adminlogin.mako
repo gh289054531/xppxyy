@@ -5,6 +5,7 @@
 <title>Insert title here</title>
 </head>
 <body>
+<%include file="headbar.html"/>
 	<p>
 	% if hasattr(c,"errorMsg") :
 		${c.errorMsg}

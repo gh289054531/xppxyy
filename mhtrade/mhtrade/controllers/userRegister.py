@@ -40,42 +40,48 @@ class UserregisterController(BaseController):
 
 
     def register(self):
-        print 1;
-        return render("register.html")
+        servername = session.get('servername', "NULL")
+        username = session.get('username', "NULL")
+        if servername!="NULL":
+            c.servername = servername
+        if username!="NULL":
+            c.username=username
+        if servername == "NULL":
+            return render("index.mako")
+        if username == "NULL":
+            return render("userlogin.mako")
+        return render("register.mako")
     
     @restrict('POST')
     @validate(schema=RegisterForm(), form='register')
     def doregister(self):
-        username = request.params.get('username')
-        password = request.params.get("password")
-        password = base64.encodestring(password)
-        qq = request.params.get("qq")
-        email = request.params.get("email")
-        selfIntroduction = request.params.get("selfIntroduction")
-        print username, password, selfIntroduction
-        code = random.randint(100, 1000000)
-        encrycode = base64.encodestring(str(code))
-        url = 'http://localhost:5000/userRegister/registerComfirmEmail?' + urllib.urlencode({'username':username, 'code':encrycode})
-        sendmail({'name':"smtp.qq.com", 'user':'289054531', 'passwd':'pstar910131'}, '289054531@qq.com', [email], '梦幻交易系统用户注册验证', '请点击链接完成注册: ' + url)
         con = None
+        con = MySQLdb.connect(host=g.dbhost, user=g.dbuser, passwd=g.dbpasswd, db=g.dbdb, port=g.dbport, charset="utf8")
+        cur = con.cursor();
         try:
-            con = MySQLdb.connect(host=g.dbhost, user=g.dbuser, passwd=g.dbpasswd, db=g.dbdb, port=g.dbport, charset="utf8")
-            cur = con.cursor();
+            username = request.params.get('username',"NULL")
+            password = request.params.get("password")
+            password = base64.encodestring(password)
+            qq = request.params.get("qq")
+            email = request.params.get("email")
+            selfIntroduction = request.params.get("selfIntroduction")
+            code = random.randint(100, 1000000)
+            encrycode = base64.encodestring(str(code))
+            url = 'http://localhost:5000/userRegister/registerComfirmEmail?' + urllib.urlencode({'username':username, 'code':encrycode})
+            sendmail({'name':"smtp.qq.com", 'user':'289054531', 'passwd':'pstar910131'}, '289054531@qq.com', [email], '梦幻交易系统用户注册验证', '请点击链接完成注册: <a href="' + url+"></a>,如果无法点击请复制到浏览器地址栏访问即可。")
             cur.execute("insert into users(username,password,QQ,self_introduction,email,level,code) values (%s,%s,%s,%s,%s,%s,%s)", (username, password, qq, selfIntroduction, email, 'user', code))
             con.commit()
         except MySQLdb.Error, e:
             print "Mysql error %d:%s" % (e.args[0], e.args[1])
-            c.errorMsg = "数据库写入信息出错"
+            c.errorMsg = "插入数据出错，很可能是用户名重复"
         finally:
             if con != None:
                 con.close()
-        return
+        return render("registerSuccessRedirect.mako")
     
     def registerComfirmEmail(self):
         username = request.params.get('username')
         code = base64.decodestring(request.params.get('code'))
-        print code
-        print type(code)
         con = None
         try:
             con = MySQLdb.connect(host=g.dbhost, user=g.dbuser, passwd=g.dbpasswd, db=g.dbdb, port=g.dbport, charset="utf8")
@@ -96,31 +102,59 @@ class UserregisterController(BaseController):
         finally:
             if con != None:
                 con.close()
-        return
+        return render("index.mako")
 
     def changepasswd(self):
-        username=session.get("username","NULL")
+        servername = session.get('servername', "NULL")
+        username = session.get('username', "NULL")
+        if servername!="NULL":
+            c.servername = servername
+        if username!="NULL":
+            c.username=username
         if username=="NULL":
             return render("userlogin.mako")
-        c.username = username
+        if servername=="NULL":
+            return render("index.mako")
         return render("changepasswd.mako")
 	
     def haschanged(self):
-        username=session.get("username","NULL")
+        servername = session.get('servername', "NULL")
+        username = session.get('username', "NULL")
+        if servername!="NULL":
+            c.servername = servername
+        if username!="NULL":
+            c.username=username
         if username=="NULL":
             return render("userlogin.mako")
-        c.username = username
+        if servername=="NULL":
+            return render("index.mako")
+        oldpasswd=request.params.get("oldpasswd")
         newpasswd=request.params.get('newpasswd')
         newpasswdrepeat=request.params.get('newpasswdrepeat')
-        print newpasswd
         if len(newpasswd)<6 or len(newpasswd)>64:
             c.errorMsg="密码长度必须在6-64之间"
             return render("changepasswd.mako")
         if newpasswd != newpasswdrepeat:
             c.errorMsg = "两次输入密码不相同，请重新输入"
             return render("changepasswd.mako")
-        
         encrynewpasswd=base64.encodestring(newpasswd)
+        encryoldpasswd=base64.encodestring(oldpasswd)
+        try:        
+            con = MySQLdb.connect(host = g.dbhost, user = g.dbuser, passwd = g.dbpasswd, db = g.dbdb, port = g.dbport, charset = "utf8")
+            cur = con.cursor()
+            cur.execute("select password from users where username =%s", (username))
+            con.commit()
+            passwordInDB=cur.fetchone()[0]
+        except MySQLdb.Error as e:
+            print "mysql error %d: %s" %(e.args[0], e.args[1])
+            c.errorMsg = "从数据库读密码错误"
+        finally:
+            if con != None:
+                con.close()
+        if encryoldpasswd!=passwordInDB:
+            c.errorMsg="旧密码错误"
+            return render("changepasswd.mako")
+        
         try:        
             con = MySQLdb.connect(host = g.dbhost, user = g.dbuser, passwd = g.dbpasswd, db = g.dbdb, port = g.dbport, charset = "utf8")
             cur = con.cursor()
@@ -132,7 +166,7 @@ class UserregisterController(BaseController):
         finally:
 			if con != None:
 				con.close()
-        return render("usersell.mako")
+        return render("index.mako")
     
        
 

@@ -7,20 +7,32 @@
 <body>
 
 <br/>
-<p>${c.username} 你好</p>
+<%include file="headbar.mako"/>
 
+<table style="width:600px;margin:0 auto;text-align:center;">
 <form action="/userRegister/haschanged" method="post">
-	输 入 新 密 码: <input type="password" name="newpasswd"/>
-	再次输入新密码：<input type="password" name="newpasswdrepeat"/>
-	<input type="submit" value="确定">
+	<tr>
+	<td>输 入 旧 密 码: </td>
+	<td><input type="password" name="oldpasswd"/></td>
+	</tr>
+	<tr>
+	<td>输 入 新 密 码: </td>
+	<td><input type="password" name="newpasswd"/></td>
+	</tr>
+	<tr>
+	<td>再次输入新密码：</td>
+	<td><input type="password" name="newpasswdrepeat"/></td>
+	</tr>
+	<tr>
+	<td><input type="submit" value="确定"></td>
+	</tr>
 </from>
-
+</table>
 <p>
 	% if hasattr(c,"errorMsg") :
 		${c.errorMsg}
 	% endif
 </p>
-
 </form>
 </body>
 </html>

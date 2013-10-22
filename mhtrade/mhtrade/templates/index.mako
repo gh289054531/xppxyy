@@ -9,7 +9,7 @@
 
 </head>
 <body>
-
+<%include file="headbar.mako"/>
 <div style="width:600px; margin:0 auto;text-align:center">
 
 	<table style="width:600px; text-align:center" border="1">
