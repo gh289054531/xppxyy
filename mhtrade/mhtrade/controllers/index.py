@@ -29,6 +29,12 @@ class IndexController(BaseController):
 		return render('/index.mako')
 
 	def choosebigserver(self):
+		servername = session.get('servername', "NULL")
+		if servername != "NULL":
+			c.servername = servername
+		username = session.get('username', "NULL")
+		if username != "NULL":
+			c.username=username
 		bigservername = request.params.get("bigservername","NULL")
 		if bigservername=="NULL":
 			c.errorMsg="没有选择大区"

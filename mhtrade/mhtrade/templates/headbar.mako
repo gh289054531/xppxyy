@@ -12,7 +12,7 @@
 				<td><a href="/userRegister/changepasswd">[修改密码]</a></td>
 			%endif
 		<td><a href="/userRegister/register" target="_blank">[注册]</a></td>
-		<td><a href="">[找回密码]</a></td>
+		<td><a href="/userRegister/findpasswd">[找回密码]</a></td>
 		<td><a href="/index/index">[选择服务器]</a>
 		%if hasattr(c,"servername"):
 			当前服务器：${c.servername}

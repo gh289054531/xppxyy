@@ -168,6 +168,96 @@ class UserregisterController(BaseController):
 				con.close()
         return render("index.mako")
     
+    def findpasswd(self):
+        servername = session.get('servername', "NULL")
+        if servername != "NULL":
+            c.servername = servername
+        username = session.get('username', "NULL")
+        if username != "NULL":
+            c.username=username
+        return render("findpasswd.mako")
+    
+    def findpasswd_sendmail(self):
+        servername = session.get('servername', "NULL")
+        if servername != "NULL":
+            c.servername = servername
+        username = session.get('username', "NULL")
+        if username != "NULL":
+            c.username=username
+        username = request.params.get('username')
+        try:        
+            con = MySQLdb.connect(host = g.dbhost, user = g.dbuser, passwd = g.dbpasswd, db = g.dbdb, port = g.dbport, charset = "utf8")
+            cur = con.cursor()
+            cur.execute("select count(*) from users where username =%s", (username))
+            con.commit()
+            count=cur.fetchone()[0]
+            if count==0:
+                c.errorMsg="用户名不存在"
+        except MySQLdb.Error as e:
+            print "mysql error %d: %s" %(e.args[0], e.args[1])
+            c.errorMsg = "从数据库读密码错误"
+        finally:
+            if con != None:
+                con.close()
+        if hasattr(c,"errorMsg"):
+            return render("findpasswd.mako")
+        try:
+            con = MySQLdb.connect(host = g.dbhost, user = g.dbuser, passwd = g.dbpasswd, db = g.dbdb, port = g.dbport, charset = "utf8")
+            cur = con.cursor()
+            cur.execute("select email from users where username = %s", username)
+            con.commit()
+            row = cur.fetchone()
+            email = row[0]
+        except MySQLdb.Error as e:
+            print "mysql error %d: %s" %(e.args[0], e.args[1])
+            e.errorMsg = "查询用户对应邮箱出错"
+        finally:
+            if con != None:
+                con.close()
+        code = random.randint(100, 1000000)
+        encrycode = base64.encodestring(str(code))
+        url = 'http://localhost:5000/userRegister/find_change_passwd?' + urllib.urlencode({'username':username, 'code':encrycode})
+        sendmail({'name':"smtp.qq.com", 'user':'289054531', 'passwd':'pstar910131'}, '289054531@qq.com', [email], '梦幻交易系统找回密码', '请点击链接重设密码: ' + url)
+        return render("hassendemail.mako")
+        
+    def find_change_passwd(self):
+        username = request.params.get('username')
+        if username=="NULL":
+            return "修改密码失败，请不要改动向您邮箱发送的网址。"
+        c.username = username
+        return render("result_find_passwd.mako")
+
+    def if_findpasswd(self):
+        servername = session.get('servername', "NULL")
+        username = session.get('username', "NULL")
+        if servername!="NULL":
+            c.servername = servername
+        if username!="NULL":
+            c.username=username
+        username = request.params.get('username')
+        newpasswd=request.params.get('newpasswd')
+        newpasswdrepeat=request.params.get('newpasswdrepeat')
+        print newpasswd
+        if len(newpasswd)<6 or len(newpasswd)>64:
+            c.errorMsg="密码长度必须在6-64之间"
+            return render("result_find_passwd.mako")
+        if newpasswd != newpasswdrepeat:
+            c.errorMsg = "两次输入密码不相同，请重新输入"
+            return render("result_find_passwd.mako")
+        
+        encrynewpasswd=base64.encodestring(newpasswd)
+        try:        
+            con = MySQLdb.connect(host = g.dbhost, user = g.dbuser, passwd = g.dbpasswd, db = g.dbdb, port = g.dbport, charset = "utf8")
+            cur = con.cursor()
+            cur.execute("update users set password=%s where username =%s", (encrynewpasswd,username))
+            con.commit()
+        except MySQLdb.Error as e:
+            print "mysql error %d: %s" %(e.args[0], e.args[1])
+            c.errorMsg = "往数据库插入新密码错误"
+        finally:
+			if con != None:
+				con.close()
+        return render("index.mako")
        
 
 def sendmail(server, fro, to, subject, text):

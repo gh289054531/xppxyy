@@ -4,7 +4,7 @@ UNDEFINED = runtime.UNDEFINED
 __M_dict_builtin = dict
 __M_locals_builtin = locals
 _magic_number = 6
-_modified_time = 1382459638.08903
+_modified_time = 1382461758.322045
 _template_filename=u'/home/pstar/xppxyy/mhtrade/mhtrade/templates/headbar.mako'
 _template_uri=u'headbar.mako'
 _template_cache=cache.Cache(__name__, _modified_time)
@@ -41,7 +41,7 @@ def render_body(context,**pageargs):
             __M_writer(u'\t\t\t\t<td><a href="/userRegister/changepasswd">[\u4fee\u6539\u5bc6\u7801]</a></td>\n')
             pass
         # SOURCE LINE 14
-        __M_writer(u'\t\t<td><a href="/userRegister/register" target="_blank">[\u6ce8\u518c]</a></td>\n\t\t<td><a href="">[\u627e\u56de\u5bc6\u7801]</a></td>\n\t\t<td><a href="/index/index">[\u9009\u62e9\u670d\u52a1\u5668]</a>\n')
+        __M_writer(u'\t\t<td><a href="/userRegister/register" target="_blank">[\u6ce8\u518c]</a></td>\n\t\t<td><a href="/userRegister/findpasswd">[\u627e\u56de\u5bc6\u7801]</a></td>\n\t\t<td><a href="/index/index">[\u9009\u62e9\u670d\u52a1\u5668]</a>\n')
         # SOURCE LINE 17
         if hasattr(c,"servername"):
             # SOURCE LINE 18
