@@ -46,10 +46,6 @@ class UserregisterController(BaseController):
             c.servername = servername
         if username!="NULL":
             c.username=username
-        if servername == "NULL":
-            return render("index.mako")
-        if username == "NULL":
-            return render("userlogin.mako")
         return render("register.mako")
     
     @restrict('POST')
