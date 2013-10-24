@@ -31,8 +31,8 @@ class UserregisterController(BaseController):
         allow_extra_fields = True
         filter_extra_fields = True
         username = formencode.validators.String(not_empty=True, min=6, max=30, messages={'tooShort':"用户名长度在6-30之间", 'tooLong':"用户名长度在6-30之间", 'empty':'请输入用户名'})
-        password = formencode.validators.String(not_empty=True, min=6, max=30, messages={'tooShort':"密码长度在6-30之间", 'tooLong':"密码长度在6-30之间", 'empty':'请输入密码'})
-        repassword = formencode.validators.String(not_empty=True, min=6, max=30, messages={'tooShort':"密码长度在6-30之间", 'tooLong':"密码长度在6-30之间", 'empty':'请输入密码'})
+        password = formencode.validators.String(not_empty=True,messages={ 'empty':'请输入密码'})
+        repassword = formencode.validators.String(not_empty=True, messages={'empty':'请输入密码'})
         chained_validators = [formencode.validators.FieldsMatch('password', 'repassword', messages={'invalidNoMatch':"密码输入不一致"})]
         qq = formencode.validators.Regex(r'^[0-9]{4,15}$', messages={'invalid':"QQ输入不合法"})
         email = formencode.validators.Email(not_empty=True, min=0, max=50, messages={ 'empty':'请输入密码', 'badDomian':"格式错误", 'noAt':"格式错误", 'badType':"格式错误", 'badUsername':"格式错误", 'domainDoesNotExist':"格式错误"})
@@ -40,42 +40,49 @@ class UserregisterController(BaseController):
 
 
     def register(self):
-        print 1;
-        return render("register.html")
+        servername = session.get('servername', "NULL")
+        username = session.get('username', "NULL")
+        if servername!="NULL":
+            c.servername = servername
+        if username!="NULL":
+            c.username=username
+        return render("register.mako")
     
     @restrict('POST')
     @validate(schema=RegisterForm(), form='register')
     def doregister(self):
-        username = request.params.get('username')
-        password = request.params.get("password")
-        password = base64.encodestring(password)
-        qq = request.params.get("qq")
-        email = request.params.get("email")
-        selfIntroduction = request.params.get("selfIntroduction")
-        print username, password, selfIntroduction
-        code = random.randint(100, 1000000)
-        encrycode = base64.encodestring(str(code))
-        url = 'http://localhost:5000/userRegister/registerComfirmEmail?' + urllib.urlencode({'username':username, 'code':encrycode})
-        sendmail({'name':"smtp.qq.com", 'user':'289054531', 'passwd':'pstar910131'}, '289054531@qq.com', [email], '梦幻交易系统用户注册验证', '请点击链接完成注册: ' + url)
         con = None
+        con = MySQLdb.connect(host=g.dbhost, user=g.dbuser, passwd=g.dbpasswd, db=g.dbdb, port=g.dbport, charset="utf8")
+        cur = con.cursor();
         try:
-            con = MySQLdb.connect(host=g.dbhost, user=g.dbuser, passwd=g.dbpasswd, db=g.dbdb, port=g.dbport, charset="utf8")
-            cur = con.cursor();
+            username = request.params.get('username',"NULL")
+            password = request.params.get("password")
+            print password
+            originpassword=base64.decodestring(password)
+            print originpassword    
+            if len(originpassword)<6 or len(originpassword)>30:
+                c.errorMsg="密码长度必须在6-30之间"
+                return render("register.mako")
+            qq = request.params.get("qq")
+            email = request.params.get("email")
+            selfIntroduction = request.params.get("selfIntroduction")
+            code = random.randint(100, 1000000)
+            encrycode = base64.encodestring(str(code))
+            url = 'http://localhost:5000/userRegister/registerComfirmEmail?' + urllib.urlencode({'username':username, 'code':encrycode})
+            sendmail({'name':"smtp.qq.com", 'user':'289054531', 'passwd':'pstar910131'}, '289054531@qq.com', [email], '梦幻交易系统用户注册验证', '请点击链接完成注册: <a href="' + url+'"></a>,如果无法点击请复制到浏览器地址栏访问即可。')
             cur.execute("insert into users(username,password,QQ,self_introduction,email,level,code) values (%s,%s,%s,%s,%s,%s,%s)", (username, password, qq, selfIntroduction, email, 'user', code))
             con.commit()
         except MySQLdb.Error, e:
             print "Mysql error %d:%s" % (e.args[0], e.args[1])
-            c.errorMsg = "数据库写入信息出错"
+            c.errorMsg = "插入数据出错，很可能是用户名重复"
         finally:
             if con != None:
                 con.close()
-        return
+        return render("registerSuccessRedirect.mako")
     
     def registerComfirmEmail(self):
         username = request.params.get('username')
         code = base64.decodestring(request.params.get('code'))
-        print code
-        print type(code)
         con = None
         try:
             con = MySQLdb.connect(host=g.dbhost, user=g.dbuser, passwd=g.dbpasswd, db=g.dbdb, port=g.dbport, charset="utf8")
@@ -96,35 +103,56 @@ class UserregisterController(BaseController):
         finally:
             if con != None:
                 con.close()
-        return
+        return render("index.mako")
 
     def changepasswd(self):
-        username=session.get("username","NULL")
+        servername = session.get('servername', "NULL")
+        username = session.get('username', "NULL")
+        if servername!="NULL":
+            c.servername = servername
+        if username!="NULL":
+            c.username=username
         if username=="NULL":
             return render("userlogin.mako")
-        c.username = username
         return render("changepasswd.mako")
 	
     def haschanged(self):
-        username=session.get("username","NULL")
+        servername = session.get('servername', "NULL")
+        username = session.get('username', "NULL")
+        if servername!="NULL":
+            c.servername = servername
+        if username!="NULL":
+            c.username=username
         if username=="NULL":
             return render("userlogin.mako")
-        c.username = username
+        oldpasswd=request.params.get("oldpasswd")
         newpasswd=request.params.get('newpasswd')
         newpasswdrepeat=request.params.get('newpasswdrepeat')
-        print newpasswd
-        if len(newpasswd)<6 or len(newpasswd)>64:
+        if len(base64.decodestring(newpasswd))<6 or len(base64.decodestring(newpasswd))>64:
             c.errorMsg="密码长度必须在6-64之间"
             return render("changepasswd.mako")
         if newpasswd != newpasswdrepeat:
             c.errorMsg = "两次输入密码不相同，请重新输入"
             return render("changepasswd.mako")
-        
-        encrynewpasswd=base64.encodestring(newpasswd)
         try:        
             con = MySQLdb.connect(host = g.dbhost, user = g.dbuser, passwd = g.dbpasswd, db = g.dbdb, port = g.dbport, charset = "utf8")
             cur = con.cursor()
-            cur.execute("update users set password=%s where username =%s", (encrynewpasswd,username))
+            cur.execute("select password from users where username =%s", (username))
+            con.commit()
+            passwordInDB=cur.fetchone()[0]
+        except MySQLdb.Error as e:
+            print "mysql error %d: %s" %(e.args[0], e.args[1])
+            c.errorMsg = "从数据库读密码错误"
+        finally:
+            if con != None:
+                con.close()
+        if str(oldpasswd).strip()!=str(passwordInDB).strip():
+            c.errorMsg="旧密码错误"
+            return render("changepasswd.mako")
+        try:        
+            con = MySQLdb.connect(host = g.dbhost, user = g.dbuser, passwd = g.dbpasswd, db = g.dbdb, port = g.dbport, charset = "utf8")
+            cur = con.cursor()
+            cur.execute("update users set password=%s where username =%s", (newpasswd,username))
             con.commit()
         except MySQLdb.Error as e:
             print "mysql error %d: %s" %(e.args[0], e.args[1])
@@ -132,52 +160,83 @@ class UserregisterController(BaseController):
         finally:
 			if con != None:
 				con.close()
-        return render("usersell.mako")
+        return render("index.mako")
     
     def findpasswd(self):
+        servername = session.get('servername', "NULL")
+        if servername != "NULL":
+            c.servername = servername
+        username = session.get('username', "NULL")
+        if username != "NULL":
+            c.username=username
         return render("findpasswd.mako")
     
     def findpasswd_sendmail(self):
+        servername = session.get('servername', "NULL")
+        if servername != "NULL":
+            c.servername = servername
+        username = session.get('username', "NULL")
+        if username != "NULL":
+            c.username=username
         username = request.params.get('username')
+        try:        
+            con = MySQLdb.connect(host = g.dbhost, user = g.dbuser, passwd = g.dbpasswd, db = g.dbdb, port = g.dbport, charset = "utf8")
+            cur = con.cursor()
+            cur.execute("select count(*) from users where username =%s", (username))
+            con.commit()
+            count=cur.fetchone()[0]
+            if count==0:
+                c.errorMsg="用户名不存在"
+        except MySQLdb.Error as e:
+            print "mysql error %d: %s" %(e.args[0], e.args[1])
+            c.errorMsg = "从数据库读密码错误"
+        finally:
+            if con != None:
+                con.close()
+        if hasattr(c,"errorMsg"):
+            return render("findpasswd.mako")
         try:
             con = MySQLdb.connect(host = g.dbhost, user = g.dbuser, passwd = g.dbpasswd, db = g.dbdb, port = g.dbport, charset = "utf8")
             cur = con.cursor()
             cur.execute("select email from users where username = %s", username)
             con.commit()
             row = cur.fetchone()
-            email = str(row[0])
+            email = row[0]
         except MySQLdb.Error as e:
             print "mysql error %d: %s" %(e.args[0], e.args[1])
-            e.errorMsg = "用户名不存在"
+            e.errorMsg = "查询用户对应邮箱出错"
         finally:
             if con != None:
                 con.close()
         code = random.randint(100, 1000000)
         encrycode = base64.encodestring(str(code))
         url = 'http://localhost:5000/userRegister/find_change_passwd?' + urllib.urlencode({'username':username, 'code':encrycode})
-        sendmail({'name':"smtp.qq.com", 'user':'289054531', 'passwd':'pstar910131'}, '289054531@qq.com', [email], '梦幻交易系统用户注册验证', '请点击链接完成注册: ' + url)
+        sendmail({'name':"smtp.qq.com", 'user':'289054531', 'passwd':'pstar910131'}, '289054531@qq.com', [email], '梦幻交易系统找回密码', '请点击链接重设密码: ' + url)
         return render("hassendemail.mako")
         
     def find_change_passwd(self):
         username = request.params.get('username')
         if username=="NULL":
-            return render("userlogin.mako")
+            return "修改密码失败，请不要改动向您邮箱发送的网址。"
         c.username = username
         return render("result_find_passwd.mako")
 
     def if_findpasswd(self):
+        servername = session.get('servername', "NULL")
+        username = session.get('username', "NULL")
+        if servername!="NULL":
+            c.servername = servername
+        if username!="NULL":
+            c.username=username
         username = request.params.get('username')
-        print username
         newpasswd=request.params.get('newpasswd')
         newpasswdrepeat=request.params.get('newpasswdrepeat')
-        print newpasswd
-        if len(newpasswd)<6 or len(newpasswd)>64:
-            c.errorMsg="密码长度必须在6-64之间"
-            return render("changepasswd.mako")
         if newpasswd != newpasswdrepeat:
             c.errorMsg = "两次输入密码不相同，请重新输入"
             return render("result_find_passwd.mako")
-        
+        if len(base64.decodestring(newpasswd))<6 or len(base64.decodestring(newpasswd))>64:
+            c.errorMsg="密码长度必须在6-64之间"
+            return render("result_find_passwd.mako")
         encrynewpasswd=base64.encodestring(newpasswd)
         try:        
             con = MySQLdb.connect(host = g.dbhost, user = g.dbuser, passwd = g.dbpasswd, db = g.dbdb, port = g.dbport, charset = "utf8")
@@ -190,7 +249,7 @@ class UserregisterController(BaseController):
         finally:
 			if con != None:
 				con.close()
-        return render("userlogin.mako")
+        return render("index.mako")
        
 
 def sendmail(server, fro, to, subject, text):

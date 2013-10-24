@@ -2,7 +2,16 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<title>用户登录</title>
+<script src="../base64.js"></script>
+<script type="text/javascript">
+function encrypw(){
+	var pw=document.getElementById("pw");
+	var pwtext=pw.value;
+	pw.value=base64encode(pwtext);
+	return true;
+}
+</script>
 </head>
 <body>
 <%include file="headbar.mako"/>
@@ -16,8 +25,8 @@
 <p><a href="/userRegister/findpasswd">[忘记密码]</a></p>
 <form action="/index/userlogin" method="post">
 	用户名：<input type="text" name="username"/>
-	密码：<input type="password" name="password"/>
-	<input type="submit" value="登录服务器" />
+	密码：<input id="pw" type="password" name="password"/>
+	<input type="submit" value="登录服务器" onclick="return encrypw()" />
 </form>
 <p>
 	% if hasattr(c,"errorMsg") :

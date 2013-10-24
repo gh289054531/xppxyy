@@ -2,7 +2,21 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<title>用户注册</title>
+<script src="../base64.js"></script>
+<script type="text/javascript">
+function encrypw(){
+	var pw=document.getElementById("pw");
+	var pwtext=pw.value;
+	pw.value=base64encode(pwtext);
+	console.log(pw.value)
+	var repw=document.getElementById("repw");
+	var pwtext=repw.value;
+	repw.value=base64encode(pwtext);
+	console.log(repw.value)
+	return true;
+}
+</script>
 </head>
 <body>
 <%include file="headbar.mako"/>	
@@ -14,11 +28,11 @@
 			</tr>
 			<tr>
 				<td>密码：</td>
-				<td><input type="password" name="password"></input></td>
+				<td><input id="pw" type="password" name="password"></input></td>
 			</tr>
 			<tr>
 				<td>密码确认：</td>
-				<td><input type="password" name="repassword"></input></td>
+				<td><input id="repw" type="password" name="repassword"></input></td>
 			</tr>
 			<tr>
 				<td>QQ：</td>
@@ -33,7 +47,7 @@
 				<td><input type="text" name="selfIntroduction"></input></td>
 			</tr>
 			<tr>
-				<td><input type="submit" value="注册"></input></td>
+				<td><input type="submit" value="注册" onclick="return encrypw()"></input></td>
 			</tr>
 		</form>
 	</table>

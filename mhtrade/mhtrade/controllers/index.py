@@ -91,8 +91,9 @@ class IndexController(BaseController):
 				c.errorMsg = "heike"
 				return render("adminlogin.mako")
 			# 如果用户名密码不对，则提示错误，返回登录页面
+			adminpw=base64.decodestring(adminpw)
 			if adminid != "xpplovexyy" or adminpw != "xpplovexyy":
-				c.errorMsg = "error"
+				c.errorMsg = "管理员帐号用户名密码错误"
 				return render("adminlogin.mako")
 			# 用户名密码都正确，往session里面写入用户名和用户等级
 			else :
@@ -123,7 +124,6 @@ class IndexController(BaseController):
 		if username=="NULL" or password=="NULL":
 			c.errorMsg="用户名密码为空"
 			return render("userlogin.mako")
-		encrypassword = base64.encodestring(password)
 		try:
 			con = MySQLdb.connect(host=g.dbhost, user=g.dbuser, passwd=g.dbpasswd, db=g.dbdb, port=g.dbport, charset="utf8")
 			cur = con.cursor()
@@ -137,7 +137,9 @@ class IndexController(BaseController):
 		finally:
 			if con != None:
 				con.close()
-		if encrypassword == try_password:
+		print password
+		print try_password
+		if password == try_password:
 			session['username'] = username
 			session['level'] = 'user'
 			session.save()
